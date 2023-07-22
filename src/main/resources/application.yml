@@ -1,0 +1,6 @@
+logging:
+  level:
+    root: INFO
+external:
+  resource:
+    github: https://api.github.com
