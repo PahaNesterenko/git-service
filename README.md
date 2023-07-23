@@ -9,14 +9,14 @@ Git Service is a microservice that provides a REST API for fetching Git informat
 - [Introduction](#introduction)
 - [Features](#features)
 - [Prerequisites](#prerequisites)
+- [Technology Stack](#technology-stack)
 - [Getting Started](#getting-started)
     - [Installation](#installation)
     - [Configuration](#configuration)
 - [Usage](#usage)
 - [API Documentation](#api-documentation)
-- [Deployment](#deployment)
+- [Deployment](#deployment-on-aws-fargate)
 - [Testing](#testing)
-- [Contributing](#contributing)
 
 ## Introduction
 
@@ -34,6 +34,15 @@ Git Service is a Java 17 microservice built with Gradle and uses Feign as the HT
 - Java 17 (or later) JDK installed.
 - Gradle build tool installed.
 
+## Technology Stack
+
+- Java 17
+- Spring Boot
+- Gradle
+- Feign (for API calls)
+- AWS Fargate
+- AWS CloudFormation for infrastructure
+
 ## Getting Started
 
 Follow the steps below to get started with Git Service.
@@ -43,7 +52,7 @@ Follow the steps below to get started with Git Service.
 1. Clone the Git Service repository:
 
    ```bash
-   git clone https://github.com/your-username/git-service.git
+   git clone https://github.com/PahaNesterenko/git-service.git
    cd git-service
 
 2. Build the microservice using Gradle:
@@ -63,9 +72,32 @@ Git Service exposes various API endpoints that can be accessed to fetch Git-rela
 
 The detailed API documentation for Git Service is available at http://localhost:8080/swagger-ui.html once the microservice is up and running. The Swagger UI allows you to explore and test the API endpoints interactively.
 
-## Deployment
+## Deployment on AWS Fargate
 
-Git Service can be deployed to any server or cloud platform that supports Java applications. You can use tools like Docker or Kubernetes for containerization and orchestration.
+### Prerequisites
+
+- You should have an AWS account with appropriate permissions to deploy AWS Fargate services.
+- Ensure that you have the AWS CLI installed and configured with the correct credentials.
+
+### Docker
+
+- Build a Docker image for your microservice
+
+    ```bash
+    docker build -t test/git-service .
+
+- and push it to AWS Elastic Container Registry
+
+    ```bash
+    docker tag test/git-service:latest public.ecr.aws/e9q2h4z1/test/git-service:latest
+    docker push public.ecr.aws/e9q2h4z1/test/git-service:latest
+
+### Infrastructure
+
+After image was pushed to container registry we can ren service on AWS Fargate
+Use AWS CLI or AWS console to execute CloudFormation templates from cf_templates directory to setup and run application on AWS cloud. 
+
+Default region - eu-north-1
 
 ## Testing
 
@@ -73,7 +105,3 @@ You can run the tests for Git Service using the following Gradle command:
 
     ```bash
     ./gradlew build
-
-## Contributing   
-
-We welcome contributions to Git Service! If you find any issues or want to add new features, please submit a pull request or open an issue on the GitHub repository.
