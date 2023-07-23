@@ -4,3 +4,5 @@ logging:
 external:
   resource:
     github: https://api.github.com
+server:
+  port: 80
