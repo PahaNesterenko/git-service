@@ -14,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -32,6 +31,8 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class GitHubVendorGitServiceTest {
 
+    private static final RepositoryDTO repositoryDTO = new RepositoryDTO("repo", false, new OwnerDTO("login"));
+    private static final RepositoryModel repositoryModel = new RepositoryModel("repo", "login", List.of(new BranchModel("master", "sha")));
     @Mock
     private GitHubHttpClient client;
     @Mock
@@ -43,23 +44,20 @@ public class GitHubVendorGitServiceTest {
     @InjectMocks
     private GitHubVendorGitService service;
 
-    private static final RepositoryDTO repositoryDTO = new RepositoryDTO("repo", false, new OwnerDTO("login"));
-    private static final RepositoryModel repositoryModel = new RepositoryModel("repo", "login", Arrays.asList(new BranchModel("master", "sha")));
-
     @Test
-    public void shouldReturnRepositories(){
-        when(client.getRepositoriesForUser(anyString(), anyInt(), anyInt())).thenReturn(Arrays.asList(repositoryDTO));
+    void shouldReturnRepositories() {
+        when(client.getRepositoriesForUser(anyString(), anyInt(), anyInt())).thenReturn(List.of(repositoryDTO));
         when(branchService.populateBranches(anyString(), any(RepositoryModel.class))).thenReturn(CompletableFuture.completedFuture(repositoryModel));
 
         List<RepositoryModel> result = service.findRepositoriesForUser("user");
 
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals("repo", result.get(0).getName());
+        assertEquals("repo", result.get(0).name());
     }
 
     @Test
-    public void shouldReturnEmptyIfNoRepos(){
+    void shouldReturnEmptyIfNoRepos() {
         when(client.getRepositoriesForUser(anyString(), anyInt(), anyInt())).thenReturn(new ArrayList<>());
 
         List<RepositoryModel> result = service.findRepositoriesForUser("user");
@@ -69,7 +67,7 @@ public class GitHubVendorGitServiceTest {
     }
 
     @Test
-    public void shouldFilterForkRepositories(){
+    void shouldFilterForkRepositories() {
         when(client.getRepositoriesForUser(anyString(), anyInt(), anyInt())).thenReturn(List.of(repositoryDTO,
                 new RepositoryDTO("repo", true, new OwnerDTO("login"))));
         when(branchService.populateBranches(anyString(), any(RepositoryModel.class))).thenReturn(CompletableFuture.completedFuture(repositoryModel));
@@ -78,12 +76,11 @@ public class GitHubVendorGitServiceTest {
 
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals("repo", result.get(0).getName());
+        assertEquals("repo", result.get(0).name());
     }
 
     @Test
-    public void shouldMakeAdditionalCallIfThereAreMoreRepositories(){
-
+    void shouldMakeAdditionalCallIfThereAreMoreRepositories() {
         when(client.getRepositoriesForUser(anyString(), anyInt(), anyInt()))
                 .thenReturn(Collections.nCopies(100, repositoryDTO))
                 .thenReturn(Collections.nCopies(5, repositoryDTO));
@@ -92,7 +89,7 @@ public class GitHubVendorGitServiceTest {
 
         assertNotNull(result);
         assertEquals(105, result.size());
-        assertEquals("repo", result.get(0).getName());
+        assertEquals("repo", result.get(0).name());
         verify(client, times(2)).getRepositoriesForUser(anyString(), anyInt(), anyInt());
     }
 }

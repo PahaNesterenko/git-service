@@ -7,9 +7,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class BranchMapper {
     public BranchModel convertBranch(BranchDTO dto) {
-        BranchModel result = new BranchModel();
-        result.setName(dto.getName());
-        result.setLastCommitSha(dto.getCommit().getSha());
-        return result;
+        return new BranchModel(dto.name(), dto.commit().sha());
     }
 }

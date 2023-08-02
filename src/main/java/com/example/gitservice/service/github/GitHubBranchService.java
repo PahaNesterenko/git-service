@@ -24,10 +24,9 @@ public class GitHubBranchService {
 
     @Async
     public CompletableFuture<RepositoryModel> populateBranches(String username, RepositoryModel repo) {
-        List<BranchDTO> branchDTOS = client.getBranches(username, repo.getName());
+        List<BranchDTO> branchDTOS = client.getBranches(username, repo.name());
         List<BranchModel> branches = branchDTOS.stream().map(branchMapper::convertBranch).toList();
-        repo.setBranches(branches);
-        return CompletableFuture.completedFuture(repo);
+        return CompletableFuture.completedFuture(new RepositoryModel(repo.name(), repo.ownerLogin(), branches));
     }
 
 }

@@ -28,12 +28,11 @@ public class GitHubVendorGitService implements VendorGitService {
     @Override
     public List<RepositoryModel> findRepositoriesForUser(String username) {
         int pageNumber = 1;
-        List<RepositoryDTO> githubRepos = new ArrayList<>();
-        githubRepos.addAll(client.getRepositoriesForUser(username, MAX_NUMBER_OF_REPOS_PER_PAGE, pageNumber));
+        List<RepositoryDTO> githubRepos = new ArrayList<>(client.getRepositoriesForUser(username, MAX_NUMBER_OF_REPOS_PER_PAGE, pageNumber));
         while (!githubRepos.isEmpty() && githubRepos.size() % MAX_NUMBER_OF_REPOS_PER_PAGE == 0) {
             githubRepos.addAll(client.getRepositoriesForUser(username, MAX_NUMBER_OF_REPOS_PER_PAGE, ++pageNumber));
         }
-        githubRepos.removeIf(RepositoryDTO::isFork);
+        githubRepos.removeIf(RepositoryDTO::fork);
         List<RepositoryModel> repos = githubRepos.stream().map(repositoryMapper::convertRepository).toList();
         List<CompletableFuture<RepositoryModel>> list = repos.stream()
                 .map(repo -> branchService.populateBranches(username, repo)).toList();

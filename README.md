@@ -92,6 +92,11 @@ The detailed API documentation for Git Service is available at http://localhost:
     docker tag test/git-service:latest public.ecr.aws/e9q2h4z1/test/git-service:latest
     docker push public.ecr.aws/e9q2h4z1/test/git-service:latest
 
+- to run container locally
+
+    ```bash
+    docker run -d -p 80:80 test/git-service    
+  
 ### Infrastructure
 
 After image was pushed to container registry we can ren service on AWS Fargate
